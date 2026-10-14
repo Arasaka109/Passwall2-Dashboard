@@ -1,0 +1,22 @@
+const {_electron}=require('C:/Users/admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),fixture=require('./ui-fixture.cjs');
+(async()=>{
+const root=path.resolve(__dirname,'..'),out=path.join(root,'qa-output');const env={...process.env,PASSWALL2_DATA_DIR:path.join(out,'glass-profile')};delete env.ELECTRON_RUN_AS_NODE;
+const app=await _electron.launch({executablePath:process.env.PASSWALL2_TEST_EXE||require('electron'),args:process.env.PASSWALL2_TEST_EXE?[]:[root],cwd:root,env});
+try{
+const page=await app.firstWindow(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});await page.locator('#hero-title').waitFor();await app.evaluate(({BrowserWindow},s)=>BrowserWindow.getAllWindows()[0].webContents.send('state',s),fixture());await page.locator('#hero-title').filter({hasText:'连接畅通'}).waitFor();
+await page.setViewportSize({width:1320,height:820});assert.equal(await page.locator('h1').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)),32);
+await page.locator('.node-card').hover();await page.waitForTimeout(150);assert.equal(await page.locator('.node-card').evaluate(el=>el.style.getPropertyValue('--hover')),'1');assert.equal(await page.locator('.node-card').evaluate(el=>getComputedStyle(el).transform),'none');await page.mouse.move(400,60);await page.waitForTimeout(500);assert.equal(await page.locator('.node-card').evaluate(el=>el.style.getPropertyValue('--tilt-x')),'0deg');
+for(const [card,kind] of [['.node-card','nodes'],['.rules-preview','rules'],['.log-preview','logs'],['.service-card','service'],['.probe-card','connection']]){
+ await page.locator(card).click({position:{x:25,y:18}});await page.waitForTimeout(500);assert.equal(await page.locator('#glass-detail').isVisible(),true);
+ const dims=await page.locator('#glass-detail').evaluate(el=>{const r=el.getBoundingClientRect();return{area:r.width*r.height/(innerWidth*innerHeight),overflow:el.scrollHeight>el.clientHeight+2};});assert(dims.area>.75&&dims.area<.85);assert.equal(dims.overflow,false);
+ if(['nodes','rules','logs'].includes(kind)){assert.equal(await page.locator('#glass-detail #view-'+kind).count(),1);if(kind==='rules'){await page.locator('[data-edit-rule="openai"]').click();assert.equal(await page.locator('#rule-dialog').isVisible(),true);await page.locator('[data-close="rule-dialog"]').first().click();await page.locator('#rule-dialog').waitFor({state:'hidden'});}}
+ if(kind==='connection'){assert.equal(await page.locator('.latency-column').count(),3);assert.equal(await page.locator('.latency-fill').first().evaluate(el=>el.style.getPropertyValue('--bar-height')),'100%');}
+ await page.screenshot({path:path.join(out,'glass-detail-'+kind+'.png')});await page.mouse.click(8,8);await page.waitForTimeout(350);assert.equal(await page.locator('#glass-detail').isVisible(),false);assert.equal(await page.locator('#view-overview').isVisible(),true);
+}
+await page.locator('.rail-button[data-view="logs"]').click();await page.waitForTimeout(600);assert.equal(await page.locator('.nav-capsule').evaluate(el=>el.style.transform),'translateY(180px)');await page.locator('.rail-button[data-view="overview"]').click();await page.waitForTimeout(600);
+await page.locator('.node-card').focus();await page.keyboard.press('Enter');await page.waitForTimeout(500);assert.equal(await page.locator('#glass-detail').isVisible(),true);await page.keyboard.press('Escape');await page.waitForTimeout(350);assert.equal(await page.locator('#glass-detail').isVisible(),false);
+await page.emulateMedia({reducedMotion:'reduce'});await page.locator('.rules-preview').click({position:{x:20,y:15}});assert.equal(await page.locator('#glass-detail').isVisible(),true);await page.locator('[data-glass-close]').click();assert.equal(await page.locator('#glass-detail').isVisible(),false);
+await page.emulateMedia({reducedMotion:'no-preference'});await page.screenshot({path:path.join(out,'glass-dashboard.png')});assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',checks:['five card expansions','backdrop dismissal','nested rule editor','keyboard and Escape','80% detail area','pointer glow and tilt reset','sliding capsule','reduced motion','no CSP errors']},null,2));
+}finally{await app.evaluate(({app})=>app.quit());await app.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

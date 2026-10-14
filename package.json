@@ -1,0 +1,7 @@
+{
+  "name": "passwall2-desktop", "version": "1.7.0", "description": "PassWall2 desktop monitor for Windows", "main": "desktop/main.cjs", "author": "PassWall2 Desktop", "license": "MIT",
+  "scripts": {"start": "electron .", "test": "node --test tests/*.test.cjs", "build": "electron-builder --win nsis --x64"},
+  "dependencies": {"ssh2": "^1.17.0"},
+  "devDependencies": {"electron": "^41.0.0", "electron-builder": "^26.0.12"},
+  "build": {"appId": "local.passwall2.desktop", "productName": "PassWall2 Monitor", "directories": {"output": "release"}, "files": ["desktop/**/*", "ui/**/*", "package.json"], "win": {"target": "nsis", "signExecutable": false, "icon": "desktop/icon.ico"}, "nsis": {"artifactName": "PassWall2-Monitor-${version}-Setup.exe", "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": "always", "createStartMenuShortcut": true, "shortcutName": "PassWall2 Monitor", "runAfterFinish": false, "deleteAppDataOnUninstall": false}}
+}
