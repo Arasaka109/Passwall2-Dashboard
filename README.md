@@ -2,6 +2,17 @@
 
 本地桌面程序，使用路由器现有 SSH 服务，无需修改路由器源码，也不会安装路由器插件。
 
+## 界面预览
+
+![仪表盘](docs/screenshots/dashboard.png)
+
+| 连接设置 | 节点状态 |
+| --- | --- |
+| ![连接设置](docs/screenshots/settings.png) | ![节点状态](docs/screenshots/nodes.png) |
+
+> 预览图使用测试数据生成。安装包请到 [Releases](../../releases/latest) 下载 `PassWall2-Monitor-1.7.0-Setup.exe`（Windows 10/11，x64）。
+
+## v1.7 弹窗与 WebUI
 
 
 1. 双击 `release/PassWall2-Monitor-1.7.0-Setup.exe`（Windows 10/11，x64），安装后使用桌面或开始菜单中的「PassWall2 Monitor」快捷方式。不需要安装 Node.js。
