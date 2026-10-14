@@ -2,6 +2,16 @@
 
 本地桌面程序，使用路由器现有 SSH 服务，无需修改路由器源码，也不会安装路由器插件。设计使用 12 列布局：右侧 8 列跨两行的连接主模块，左侧与下方 4 列状态卡片。
 
+## 界面预览
+
+![仪表盘](docs/screenshots/dashboard.png)
+
+| 连接设置 | 节点状态 |
+| --- | --- |
+| ![连接设置](docs/screenshots/settings.png) | ![节点状态](docs/screenshots/nodes.png) |
+
+> 预览图使用测试数据生成。安装包请到 [Releases](../../releases/latest) 下载 `PassWall2-Monitor-1.7.0-Setup.exe`（Windows 10/11，x64）。
+
 ## v1.7 弹窗与 WebUI
 
 所有应用内二级弹窗均支持点击虚化背景或按 Esc 关闭，保留退出过渡；嵌套规则编辑只关闭最上层弹窗。打开 WebUI 使用当前路由器根地址，不固定跳转 PassWall2。桌面交付 ZIP 包含普通安装程序及完整项目源码，排除依赖、用户配置和测试输出。
