@@ -1,4 +1,4 @@
-# PassWall2 Monitor · Windows 桌面面板
+# PassWall2 Dashboard · Windows 桌面面板
 
 本地桌面程序，使用路由器现有 SSH 服务，无需修改路由器源码，也不会安装路由器插件。
 
